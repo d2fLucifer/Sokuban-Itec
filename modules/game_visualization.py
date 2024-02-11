@@ -47,6 +47,7 @@ class GameVisualization(object):
 
         self.wall_image = pygame.image.load(os.path.join('assets', 'wall.png'))
         self.box_image = pygame.image.load(os.path.join('assets', 'box.png'))
+        self.box_on_target_image = pygame.image.load(os.path.join('assets', 'crate_10.png'))
         self.target_image = pygame.image.load(
             os.path.join('assets', 'target.png'))
         self.floor_image = pygame.image.load(
@@ -69,7 +70,10 @@ class GameVisualization(object):
                 if self.game_state.is_wall((i, j)):
                     self.screen.blit(self.wall_image, rect)
                 elif self.game_state.is_box((i, j)):
-                    self.screen.blit(self.box_image, rect)
+                    if self.game_state.is_target((i, j)):
+                        self.screen.blit(self.box_on_target_image, rect)
+                    else:
+                        self.screen.blit(self.box_image, rect)
                 elif self.game_state.is_target((i, j)):
                     self.screen.blit(self.target_image, rect)
                 else:
@@ -90,12 +94,21 @@ class GameVisualization(object):
             raise Exception('Invalid direction')
         pygame.display.flip()
 
+
     def draw_solution(self):
+        if self.solution is None:
+            print("No solution available.")
+            self.draw_no_solution_image()
+            return
         for i in range(len(self.solution)):
             self.game_state = self.game_state.move(self.solution[i])
             self.draw(self.solution[i])
             time.sleep(0.5)
-
+    def draw_no_solution_image(self):
+        # Load and display a "No Solution" image
+        no_solution_image = pygame.image.load(os.path.join('assets', 'no_solution.png'))
+        self.screen.blit(no_solution_image, (0, 0))
+        pygame.display.flip()
     def start(self):
         self.init_pygame()
         self.draw()
