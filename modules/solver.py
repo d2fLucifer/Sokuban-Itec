@@ -22,16 +22,16 @@ class Solver(object):
             raise Exception('Invalid strategy')
         self.time = time.time() - start_time
 
-        print(self.solution)
-
     def print_solution(self, path, start_time):
         end_time = time.time()
         print("Time taken:", round(end_time - start_time, 3), "seconds")
-        
+
         if path is not None:
-            print("Expanded state:", path)
-            print("Solved:", self.initial_state.check_solved())
-            self.moves_to_goal = len(path)  # Update moves_to_goal attribute
+            print("Expanded states:", self.expanded_states)
+            print("Generated states:", self.generated_states)
+            moves_to_goal = len(path)
+            print("Number of moves to reach the goal:", moves_to_goal)
+            self.moves_to_goal = moves_to_goal  # Update moves_to_goal attribute
         else:
             print("No solution found.")
 
@@ -43,56 +43,44 @@ class Solver(object):
             current_state, path = open_queue.popleft()
 
             if current_state.check_solved():
-                self.expanded_states = len(closed_set)
                 return path
 
             current_state_hash = hash(current_state)
             if current_state_hash not in closed_set:
                 closed_set.add(current_state_hash)
+                self.generated_states += 1
 
                 for direction in self.all_directions():
                     next_state = current_state.move(direction)
                     next_state_hash = hash(next_state)
                     if next_state_hash not in closed_set:
                         open_queue.append((next_state, path + [direction]))
+                        self.expanded_states += 1
 
         return None
 
     def dfs(self):
-        start_time = time.time()
+        stack = [(self.initial_state, [])]
+        closed_set = set()
 
-        # Set a reasonable maximum depth
-        max_depth = 1000  # Adjust this value based on your problem's characteristics
+        while stack:
+            current_state, path = stack.pop()
 
-        result = None
-        for depth_limit in range(1, max_depth + 1):
-            result = self.dfs_recur(self.initial_state, depth_limit, set())
-            if result:
-                self.expanded_states = len(result) - 1  # Exclude the initial state from the count
-                self.time = time.time() - start_time
-                self.print_solution(result, start_time)
-                return result
+            if current_state.check_solved():
+                self.expanded_states += 1
+                return path
 
-        self.time = time.time() - start_time
-        self.print_solution(None, start_time)
-        return None
+            current_state_hash = hash(current_state)
+            if current_state_hash not in closed_set:
+                closed_set.add(current_state_hash)
+                self.generated_states += 1
 
-    def dfs_recur(self, current_state, depth_limit, closed_set):
-        if current_state.check_solved():
-            return []
-
-        current_state_hash = hash(current_state)
-        if current_state_hash in closed_set or depth_limit == 0:
-            return None
-
-        closed_set.add(current_state_hash)
-
-        for direction in self.all_directions():
-            next_state = current_state.move(direction)
-            result = self.dfs_recur(next_state, depth_limit - 1, closed_set)
-
-            if result is not None:
-                return [direction] + result
+                for direction in self.all_directions():
+                    next_state = current_state.move(direction)
+                    next_state_hash = hash(next_state)
+                    if next_state_hash not in closed_set:
+                        stack.append((next_state, path + [direction]))
+                        self.expanded_states += 1  # Increment for each expanded state
 
         return None
 
@@ -105,12 +93,13 @@ class Solver(object):
             current_cost, current_state, path = heapq.heappop(open_list)
 
             if current_state.check_solved():
-                self.expanded_states = len(closed_set)
+                self.expanded_states += 1
                 return path
 
             current_state_hash = hash(current_state)
             if current_state_hash not in closed_set:
                 closed_set.add(current_state_hash)
+                self.generated_states += 1
 
                 for direction in self.all_directions():
                     next_state = current_state.move(direction)
@@ -118,31 +107,7 @@ class Solver(object):
                     if next_state_hash not in closed_set:
                         new_cost = next_state.get_heuristic()
                         heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
-
-        return None
-
-    def ucs(self):
-        open_list = [(self.initial_state.get_current_cost(), self.initial_state, [])]
-        heapq.heapify(open_list)
-        closed_set = set()
-
-        while open_list:
-            current_cost, current_state, path = heapq.heappop(open_list)
-
-            if current_state.check_solved():
-                self.expanded_states = len(closed_set)
-                return path
-
-            current_state_hash = hash(current_state)
-            if current_state_hash not in closed_set:
-                closed_set.add(current_state_hash)
-
-                for direction in self.all_directions():
-                    next_state = current_state.move(direction)
-                    next_state_hash = hash(next_state)
-                    if next_state_hash not in closed_set:
-                        new_cost = next_state.get_current_cost()
-                        heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
+                        self.expanded_states += 1  # Increment for each expanded state
 
         return None
 
@@ -155,12 +120,13 @@ class Solver(object):
             _, current_state, path = heapq.heappop(open_list)
 
             if current_state.check_solved():
-                self.expanded_states = len(closed_set)
+                self.expanded_states += 1
                 return path
 
             current_state_hash = hash(current_state)
             if current_state_hash not in closed_set:
                 closed_set.add(current_state_hash)
+                self.generated_states += 1
 
                 for direction in self.all_directions():
                     next_state = current_state.move(direction)
@@ -168,8 +134,42 @@ class Solver(object):
                     if next_state_hash not in closed_set:
                         new_cost = next_state.get_heuristic()
                         heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
+                        self.expanded_states += 1  # Increment for each expanded state
 
         return None
+    def ucs(self):
+        open_list = [(self.initial_state.get_current_cost(), self.initial_state, [])]
+        heapq.heapify(open_list)
+        closed_set = set()
+
+        while open_list:
+            current_cost, current_state, path = heapq.heappop(open_list)
+
+            if current_state.check_solved():
+                self.expanded_states += 1
+                return path
+
+            current_state_hash = hash(current_state)
+            if current_state_hash in closed_set:
+                continue
+
+            closed_set.add(current_state_hash)
+            self.generated_states += 1
+
+            for direction in self.all_directions():
+                next_state = current_state.move(direction)
+                next_state_hash = hash(next_state)
+                if next_state_hash not in closed_set:
+                    new_cost = next_state.get_current_cost()
+                    self.add_to_open_list(open_list, new_cost, next_state, path + [direction])
+
+        return None
+
+    def add_to_open_list(self, open_list, cost, state, path):
+        heapq.heappush(open_list, (cost, state, path))
+        self.expanded_states += 1
+
+
 
     def all_directions(self):
         return ['U', 'D', 'L', 'R']

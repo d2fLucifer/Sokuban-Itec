@@ -101,16 +101,13 @@ class GameVisualization(object):
             self.draw_no_solution_image()
             return
 
-        start_time = time.time()  # Record the start time
 
         for i in range(len(self.solution)):
             self.game_state = self.game_state.move(self.solution[i])
             self.draw(self.solution[i])
-            time.sleep(0.5)
+            time.sleep(0.1)
 
-        end_time = time.time()  # Record the end time
-        total_time = round(end_time - start_time, 3)
-        print(f"Time to move to the goal: {total_time} seconds")
+      
     def draw_no_solution_image(self):
         # Load and display a "No Solution" image
         no_solution_image = pygame.image.load(os.path.join('assets', 'no_solution.png'))
