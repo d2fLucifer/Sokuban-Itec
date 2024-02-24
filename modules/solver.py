@@ -35,6 +35,13 @@ class Solver(object):
         else:
             print("No solution found.")
 
+    def get_legal_action(self, state):
+        """
+        Get legal actions for a given state.
+        You need to implement this method based on your state representation.
+        """
+        return state.get_legal_actions()
+
     def bfs(self):
         open_queue = deque([(self.initial_state, [])])
         closed_set = set()
@@ -50,7 +57,7 @@ class Solver(object):
                 closed_set.add(current_state_hash)
                 self.generated_states += 1
 
-                for direction in self.all_directions():
+                for direction in self.get_legal_action(current_state):
                     next_state = current_state.move(direction)
                     next_state_hash = hash(next_state)
                     if next_state_hash not in closed_set:
@@ -75,7 +82,7 @@ class Solver(object):
                 closed_set.add(current_state_hash)
                 self.generated_states += 1
 
-                for direction in self.all_directions():
+                for direction in self.get_legal_action(current_state):
                     next_state = current_state.move(direction)
                     next_state_hash = hash(next_state)
                     if next_state_hash not in closed_set:
@@ -85,8 +92,7 @@ class Solver(object):
         return None
 
     def astar(self):
-        open_list = [(self.initial_state.get_heuristic(), self.initial_state, [])]
-        heapq.heapify(open_list)
+        open_list = [(self.initial_state.get_total_cost(), self.initial_state, [])]
         closed_set = set()
 
         while open_list:
@@ -101,11 +107,11 @@ class Solver(object):
                 closed_set.add(current_state_hash)
                 self.generated_states += 1
 
-                for direction in self.all_directions():
+                for direction in self.get_legal_action(current_state):
                     next_state = current_state.move(direction)
                     next_state_hash = hash(next_state)
                     if next_state_hash not in closed_set:
-                        new_cost = next_state.get_heuristic()
+                        new_cost = next_state.get_total_cost()
                         heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
                         self.expanded_states += 1  # Increment for each expanded state
 
@@ -128,7 +134,7 @@ class Solver(object):
                 closed_set.add(current_state_hash)
                 self.generated_states += 1
 
-                for direction in self.all_directions():
+                for direction in self.get_legal_action(current_state):
                     next_state = current_state.move(direction)
                     next_state_hash = hash(next_state)
                     if next_state_hash not in closed_set:
@@ -137,6 +143,7 @@ class Solver(object):
                         self.expanded_states += 1  # Increment for each expanded state
 
         return None
+    
     def ucs(self):
         open_list = [(self.initial_state.get_current_cost(), self.initial_state, [])]
         heapq.heapify(open_list)
@@ -156,11 +163,11 @@ class Solver(object):
             closed_set.add(current_state_hash)
             self.generated_states += 1
 
-            for direction in self.all_directions():
+            for direction in self.get_legal_action(current_state):
                 next_state = current_state.move(direction)
                 next_state_hash = hash(next_state)
                 if next_state_hash not in closed_set:
-                    new_cost = next_state.get_current_cost()
+                    new_cost = next_state.get_current_cost() + next_state.get_heuristic()
                     self.add_to_open_list(open_list, new_cost, next_state, path + [direction])
 
         return None
@@ -168,8 +175,6 @@ class Solver(object):
     def add_to_open_list(self, open_list, cost, state, path):
         heapq.heappush(open_list, (cost, state, path))
         self.expanded_states += 1
-
-
 
     def all_directions(self):
         return ['U', 'D', 'L', 'R']

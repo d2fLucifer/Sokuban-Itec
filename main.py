@@ -19,7 +19,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--map', help='The map file', default='maps/sokoban1.txt')
     parser.add_argument(
-        '--strategy', help='The strategy to solve the game', default='greedy')
+        '--strategy', help='The strategy to solve the game', default='dfs')
     args = parser.parse_args()
 
     map = load_map(args.map)

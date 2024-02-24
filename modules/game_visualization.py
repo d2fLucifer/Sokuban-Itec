@@ -47,7 +47,6 @@ class GameVisualization(object):
 
         self.wall_image = pygame.image.load(os.path.join('assets', 'wall.png'))
         self.box_image = pygame.image.load(os.path.join('assets', 'box.png'))
-        self.box_on_target_image = pygame.image.load(os.path.join('assets', 'crate_10.png'))
         self.target_image = pygame.image.load(
             os.path.join('assets', 'target.png'))
         self.floor_image = pygame.image.load(
@@ -70,10 +69,7 @@ class GameVisualization(object):
                 if self.game_state.is_wall((i, j)):
                     self.screen.blit(self.wall_image, rect)
                 elif self.game_state.is_box((i, j)):
-                    if self.game_state.is_target((i, j)):
-                        self.screen.blit(self.box_on_target_image, rect)
-                    else:
-                        self.screen.blit(self.box_image, rect)
+                    self.screen.blit(self.box_image, rect)
                 elif self.game_state.is_target((i, j)):
                     self.screen.blit(self.target_image, rect)
                 else:

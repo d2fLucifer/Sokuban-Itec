@@ -1,3 +1,5 @@
+import numpy as np
+
 class GameState:
     def __init__(self, map, current_cost=0, parent=None):
         self.map = map
@@ -53,10 +55,13 @@ class GameState:
         row, col = position
         return self.map[row][col] == '*'
 
-    def is_box_in_corner(self, box_position):
-        row, col = box_position
-        # Implement logic to check if the box is in a corner
-        return False  # Placeholder implementation, replace with actual logic
+    def is_box_in_corner(self, new_player_position, new_box_position):
+        player_row, player_col = new_player_position
+        box_row, box_col = new_box_position
+
+        # Check if the box is in a corner relative to the player's new position
+        return (player_row + box_row) % 2 == 0 and (player_col + box_col) % 2 == 0
+
 
     def get_heuristic(self):
         box_target_distances = [
@@ -64,6 +69,7 @@ class GameState:
             for box in self.boxes
         ]
         return sum(box_target_distances)
+
 
     def get_total_cost(self):
         return self.current_cost + self.get_heuristic()
@@ -181,3 +187,7 @@ class GameState:
 
     def __hash__(self):
         return hash(tuple(map(tuple, self.map)))
+
+    def get_legal_actions(self):
+
+        return [direction for direction, _, _ in self.get_possible_moves()]
