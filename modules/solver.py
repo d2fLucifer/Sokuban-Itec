@@ -92,30 +92,30 @@ class Solver(object):
         return None
 
     def astar(self):
-        open_list = [(self.initial_state.get_total_cost(), self.initial_state, [])]
-        closed_set = set()
+            open_list = [(self.initial_state.get_total_cost(), self.initial_state, [])]
+            closed_set = set()
 
-        while open_list:
-            current_cost, current_state, path = heapq.heappop(open_list)
+            while open_list:
+                current_cost, current_state, path = heapq.heappop(open_list)
 
-            if current_state.check_solved():
-                self.expanded_states += 1
-                return path
+                if current_state.check_solved():
+                    self.expanded_states += 1
+                    return path
 
-            current_state_hash = hash(current_state)
-            if current_state_hash not in closed_set:
-                closed_set.add(current_state_hash)
-                self.generated_states += 1
+                current_state_hash = hash(current_state)
+                if current_state_hash not in closed_set:
+                    closed_set.add(current_state_hash)
+                    self.generated_states += 1
 
-                for direction in self.get_legal_action(current_state):
-                    next_state = current_state.move(direction)
-                    next_state_hash = hash(next_state)
-                    if next_state_hash not in closed_set:
-                        new_cost = next_state.get_total_cost()
-                        heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
-                        self.expanded_states += 1  # Increment for each expanded state
+                    for direction in self.get_legal_action(current_state):
+                        next_state = current_state.move(direction)
+                        next_state_hash = hash(next_state)
+                        if next_state_hash not in closed_set:
+                            new_cost = next_state.get_total_cost()
+                            heapq.heappush(open_list, (new_cost, next_state, path + [direction]))
+                            self.expanded_states += 1  # Increment for each expanded state
 
-        return None
+            return None
 
     def greedy(self):
         open_list = [(self.initial_state.get_heuristic(), self.initial_state, [])]

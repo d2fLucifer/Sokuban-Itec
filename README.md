@@ -22,13 +22,13 @@ For in-depth instructions and game mechanics, check out our detailed documentati
 We welcome contributions! If you'd like to enhance Sokuban-Itec, please read our [contribution guidelines](CONTRIBUTING.md).
 
 📷 **Screenshots:**
+
 ![Screenshot 1](screenshots/sokuban-screenshot1.png)
+
 ![Screenshot 2](screenshots/sokuban-screenshot2.png)
 
 📑 **License:**
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 🌐 **Connect with Us:**
-- Website: [www.sokubanitec.com](https://www.sokubanitec.com)
-- Twitter: [@SokubanItec](https://twitter.com/SokubanItec)
-- Email: info@sokubanitec.com
+- Email: d2f.working@gmail.com 

@@ -1,3 +1,23 @@
+"""
+Sokuban game state class
+The state of the game consists the map which is a 2D array of characters. There are 6 types of characters:
+- ' ': empty space
+- '#': wall
+- '$': box
+- '.': target
+- '@': player
+- '+': player on target
+- '*': box on target
+The game state class keeps track of the map.
+The game state also keeps track of the player and box positions, and whether the game is solved or not.
+The game state class has the following methods:
+- find_player(): find the player in the map and return its position
+- find_boxes(): find all the boxes in the map and return their positions
+- find_targets(): find all the targets in the map and return their positions  
+- generate_next_state(direction): generate the next game state by moving the player to the given direction
+- check_solved(): check if the game is solved
+"""
+
 import numpy as np
 
 class GameState:
